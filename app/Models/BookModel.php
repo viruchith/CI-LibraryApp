@@ -37,6 +37,19 @@ class BookModel extends Model{
     }
 
 
+    public function checkBookAvailability($ref_num){
+        $book = $this->where(['ref_num'=>$ref_num])->first();
+        if(!empty($book)){
+            if(strcmp($book['status'],'available') === 0){
+                return $book;
+            }else{
+                return 'Book is unavailable !';
+            }
+        }else{
+            return 'Book does not exist !';
+        }
+    }
+
     public function searchBooks($match,$q,$limit){
         if($limit>200){
             $limit=200;
@@ -61,4 +74,19 @@ class BookModel extends Model{
     public function fetchBookByRefNum($ref_num){
         return $this->asArray()->where(["ref_num"=>$ref_num])->first();
     }
+
+    public function fetchAllBooksCount(){
+        return $this->countAll();
+    }
+
+    public function fetchAllTitlesCount(){
+        $query = $this->query("SELECT COUNT(DISTINCT(title)) AS count FROM cse_library_books ");
+        return $query->getRow()->count;
+    }
+
+    public function fetchTopTenTitles(){
+        $query = $this->query("SELECT title,COUNT(title) AS quantity FROM cse_library_books WHERE 1 GROUP BY title ORDER BY quantity DESC LIMIT 10 ");
+        return $query->getResultArray();
+    }
+
 }

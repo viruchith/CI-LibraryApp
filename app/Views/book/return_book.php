@@ -31,11 +31,13 @@
                 </div>
             <?php endif; ?>
             <?php
-            if (!empty($success) && !empty($msg)) {
-                echo '<div class="alert alert-success" role="alert">' . $msg . '</div>';
-            } else if (!empty($success) && !$success) {
-                echo '<div class="alert alert-danger" role="alert">' . $msg . '</div>';
-            }
+                if ($message_exists) {
+                if ($success) {
+                    echo '<div class="alert alert-success" role="alert">' . $msg . '</div>';
+                } else{
+                    echo '<div class="alert alert-danger" role="alert">' . $msg . '</div>';
+                }
+                }
 
             ?>
         </div>

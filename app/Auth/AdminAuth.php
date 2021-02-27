@@ -111,6 +111,16 @@ class AdminAuth
         }
     }
 
+    public function isNotSuperAdmin(string $str, string $fields, array $data)
+    {
+        $admin = $this->admin_model->fetchAdmin(["email" => $data['email']]);
+        if($admin['is_superadmin'] == false){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public function verifyCaptcha(string $str, string $fields, array $data){
         $captcha = new Captcha();
         return $captcha->verifyCaptcha($data['captcha']);

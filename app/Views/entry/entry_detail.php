@@ -78,10 +78,10 @@
                 <?php
 
                 if (!$is_returned) {
-                    echo '<label for="">Returned book : <span class="badge bg-danger">No</span> </label><br><small>'.round((time()-strtotime($issue_time))/ (60 * 60 * 24)).' days since issue</small>';
+                    echo '<label for="">Returned book : <span class="badge bg-danger">No</span> </label><br><small>' . round((time() - strtotime($issue_time)) / (60 * 60 * 24)) . ' days since issue</small>';
                 } else {
                     echo '<label for="">Returned book : <span class="badge bg-success">Yes</span> </label><br>';
-                    echo '<label for="">Returned on : ' . date("d/m/Y g:i:s:a", strtotime($return_time)) . '</label><br>Returned after '.round((strtotime($return_time) - strtotime($issue_time)) / (60 * 60 * 24)).' days ';
+                    echo '<label for="">Returned on : ' . date("d/m/Y g:i:s:a", strtotime($return_time)) . '</label><br>Returned after ' . round((strtotime($return_time) - strtotime($issue_time)) / (60 * 60 * 24)) . ' days ';
                 }
 
                 ?>

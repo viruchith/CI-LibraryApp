@@ -6,6 +6,8 @@ use App\Auth\AdminAuth;
 
 use App\Models\AdminModel;
 
+use App\Models\BookModel;
+
 use App\RedisCache\CacheToken;
 
 use App\Mailer\SendMail;
@@ -84,6 +86,26 @@ class Admin extends BaseController
     }
     }
 
+
+    public function dashboard(){
+        if ($this->admin_auth->isAuthenticated()) {
+            $book_model = new BookModel();
+            $data = [
+                'books_total_count'=>$book_model->fetchAllBooksCount(),
+                'books_titles_count'=>$book_model->fetchAllTitlesCount()
+            ];
+
+            if(strcmp($this->request->getGet('data'),'titles') === 0){
+                return $this->response->setStatusCode(200)->setJSON(json_encode(['titles'=>$book_model->fetchTopTenTitles()]));
+            }
+
+            return view("admin/dashboard",$data);
+        } else {
+            return redirect()->to('/admin');
+        }
+        
+    }
+
     public function changepassword(){
         //Admin ChangePassword
         $data=array();
@@ -125,11 +147,7 @@ class Admin extends BaseController
                 }
                 
             }
-            $captcha = new Captcha();
-
-            $data['captcha'] = $captcha->generateCaptcha();
-
-            return view("admin/change_password", $data);
+            return "";
         }else{
             return redirect()->to('/admin');
         }
@@ -298,14 +316,79 @@ class Admin extends BaseController
     }
 
     public function add(){
-        if ($this->admin_auth->isAuthenticated()) {
-        
+        if ($this->admin_auth->isAuthenticated() && $this->admin_auth->isSuperAdmin()) {
+            if($this->request->getMethod(true) === 'POST'){
+                $rules=[
+                    'name'=>'required|string|min_length[2]|max_length[250]',
+                    'email'=>'required|valid_email|unique_email[email]|max_length[250]',
+                    'mobile'=>'required|numeric|exact_length[10]',
+                    'pin'=>'required|numeric|exact_length[4]',
+                    'password'=>'required|min_length[8]|max_length[200]|matches[retypepassword]',
+                    'retypepassword' => 'required|min_length[8]|max_length[200]|matches[password]',
+
+                ];
+
+                $errors = [
+                    'email'=>[
+                        'unique_email'=>'Email is already under use !'
+                    ]
+                ];
+
+                if(!$this->validate($rules,$errors)){
+                    $data['success'] = false;
+                    $data['errors'] = $this->validator->getErrors(); 
+                }else{
+                    $details = array(
+                        'name'=>$this->request->getPost('name'),
+                        'email'=>$this->request->getPost('email'),
+                        'mobile'=>$this->request->getPost('mobile'),
+                        'pin'=>$this->request->getPost('pin'),
+                        'password'=>$this->request->getPost('password')
+                    );
+
+                    $this->admin_model->createAdmin($details);
+                    $data['success'] = true;
+                    $data['msg'] = "User added Successfully !";
+                }
+
+                return $this->response->setStatusCode(200)->setJSON(json_encode($data));
+            }
             return view('admin/add_admin');
 
         } else {
             return redirect()->to('/admin');
         }
         
+    }
+
+    public function delete(){
+        if($this->admin_auth->isAuthenticated() && $this->admin_auth->isSuperAdmin()){
+            if($this->request->getMethod(true)==='POST'){
+                $rules=[
+                    'email'=>'validateEmail[email]|isNotSuperAdmin[email]'
+                ];
+
+                $errors = [
+                    'email'=>[
+                        'validateEmail'=>'Email does not exist !',
+                        'isNotSuperAdmin'=>'You cannot delete a Super Admin !'
+                    ],
+
+                ];
+
+                if(!$this->validate($rules,$errors)){
+                    // Delete Admin
+                    $data['success'] = false ;
+                    $data['errors'] = $this->validator->getErrors();
+                }else{
+                    $email = $this->request->getPost('email');
+                    $this->admin_model->deleteAdmin($email);
+                    $data['success'] = true;
+                    $data['msg'] = "User deleted successfully !";
+                }
+                return $this->response->setStatusCode(200)->setJSON(json_encode($data));
+            }
+        }
     }
 
     public function users($user='all'){
@@ -360,7 +443,7 @@ class Admin extends BaseController
 
             }
 
-            return view('admin/account',$data);
+            return view('admin/account_settings',$data);
 
         }else{
             return redirect()->to('/admin');
@@ -368,8 +451,10 @@ class Admin extends BaseController
 
     }
 
-
-    
+    public function demo(){
+        $book_model = new BookModel();
+         return $this->response->setStatusCode(200)->setJSON(json_encode($book_model->fetchTopTenTitles()));
+    }
 
     public function logout(){
         session()->destroy();

@@ -42,7 +42,14 @@ class AdminModel extends Model
     }
 
     public function fetchAllUsersInfo(){
-        return $this->select('id,email,name,mobile,last_login')->findAll(100);
+        return $this->select('id,email,name,mobile,last_login,is_superadmin')->findAll(100);
+    }
+    public function createAdmin($details){
+        return $this->insert(['name'=>$details['name'],'email'=>$details['email'],'mobile'=>$details['mobile'],'pin'=>password_hash($details['pin'],PASSWORD_DEFAULT),'password'=>password_hash($details['password'],PASSWORD_DEFAULT),'is_superadmin'=>false]);
+    }
+
+    public function deleteAdmin($email){
+        return $this->where(['email'=>$email,'is_superadmin'=>false])->delete();
     }
 
 }

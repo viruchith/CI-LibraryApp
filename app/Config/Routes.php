@@ -35,6 +35,15 @@ $routes->get('/', 'Home::index');
 # Admin Routes
 $routes->get('/admin','Admin::index');
 $routes->post('/admin','Admin::index');
+
+#Entry Routes
+$routes->get('/entry/get', 'Entry::get');
+$routes->get('/entry/all', 'Entry::all');
+$routes->get('/entry/report', 'Entry::report');
+$routes->get('/entry/pending', 'Entry::pending');
+$routes->get('/entry/(:alphanum)', 'Entry::index/$1');
+
+
 /**
  * --------------------------------------------------------------------
  * Additional Routing

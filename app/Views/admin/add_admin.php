@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <title>Add Admin</title>
+    <!--Google fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet">
     <!-- Bootstrap core CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 
@@ -26,7 +29,16 @@
 
         /* Dashboard.css */
         body {
-            font-size: .875rem;
+            font-size: medium;
+            font-family: 'Ubuntu', sans-serif;
+        }
+
+        label {
+            font-size: large;
+        }
+
+        table {
+            font-size: medium;
         }
 
         .feather {
@@ -150,76 +162,98 @@
 
     <div class="container-fluid">
         <div class="row">
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <nav id="sidebarMenu" class="overflow-auto col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
                 <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Admin</span>
+                        <a class="link-secondary" href="/admin/dashboard" aria-label="Add a new report">
+                            <span data-feather="user"></span>
+                        </a>
+                    </h6>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">
+                            <a class="nav-link" aria-current="page" href="/admin/dashboard">
                                 <span data-feather="home"></span>
                                 Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span data-feather="file"></span>
-                                Orders
+                            <a class="nav-link active" href="/admin/add">
+                                <span data-feather="user-plus"></span>
+                                Add
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span data-feather="shopping-cart"></span>
-                                Products
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span data-feather="users"></span>
-                                Customers
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span data-feather="bar-chart-2"></span>
-                                Reports
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span data-feather="layers"></span>
-                                Integrations
+                            <a class="nav-link" href="/admin/account">
+                                <span data-feather="settings"></span>
+                                Account
                             </a>
                         </li>
                     </ul>
 
                     <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>Saved reports</span>
-                        <a class="link-secondary" href="#" aria-label="Add a new report">
-                            <span data-feather="plus-circle"></span>
+                        <span>Books</span>
+                        <a class="link-secondary" href="/book" aria-label="Add a new report">
+                            <span data-feather="book"></span>
                         </a>
                     </h6>
                     <ul class="nav flex-column mb-2">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span data-feather="file-text"></span>
-                                Current month
+                            <a class="nav-link" href="/book">
+                                <span data-feather="book-open"></span>
+                                All Books
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span data-feather="file-text"></span>
-                                Last quarter
+                            <a class="nav-link" href="/book/search">
+                                <span data-feather="search"></span>
+                                Search
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/book/issue">
+                                <span data-feather="plus-square"></span>
+                                Issue Book
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span data-feather="file-text"></span>
-                                Social engagement
+                            <a class="nav-link" href="/book/return">
+                                <span data-feather="corner-down-left"></span>
+                                Return Book
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="/book/uploadcsv">
+                                <span data-feather="file"></span>
+                                Upload CSV
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/book/add">
+                                <span data-feather="plus"></span>
+                                Add Book
+                            </a>
+                        </li>
+                    </ul>
+
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Entries</span>
+                        <a class="link-secondary" href="/entry/all" aria-label="Add a new report">
+                            <span data-feather="database"></span>
+                        </a>
+                    </h6>
+                    <ul class="nav flex-column mb-2">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/entry/all">
+                                <span data-feather="book-open"></span>
+                                All Entries
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/entry/report">
                                 <span data-feather="file-text"></span>
-                                Year-end sale
+                                Report
                             </a>
                         </li>
                     </ul>
@@ -243,7 +277,10 @@
 
                 <div class="container">
                     <div class="container">
-                        <form>
+                        <form id="add-admin" action="/admin/add" method="post">
+                            <div id="alert">
+
+                            </div>
                             <div class="form-floating mb-3">
                                 <input type="text" name="name" class="form-control" id="name" placeholder="Name" aria-describedby="">
                                 <label for="name" class="form-label">Name</label>
@@ -257,6 +294,10 @@
                                 <label for="mobile" class="form-label">Mobile Number</label>
                             </div>
                             <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="pin" id="pin" pattern="[0-9]{4}" placeholder="Mobile Number" aria-describedby="">
+                                <label for="pin" class="form-label">Pin</label>
+                            </div>
+                            <div class="form-floating mb-3">
                                 <input type="password" name="password" id="password" class="form-control" placeholder="New Password" id="exampleInputPassword1">
                                 <label for="password" class="form-label">New Password</label>
                             </div>
@@ -264,7 +305,12 @@
                                 <input type="password" name="retypepassword" id="retypepassword" class="form-control" placeholder="Retype Password" id="exampleInputPassword1">
                                 <label for="retypepassword" class="form-label">Retype Password</label>
                             </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" class="btn btn-primary">
+                                <div id="loading" class="spinner-border text-danger" role="status">
+                                    <span class="visually-hidden">Loading...</span>&nbsp;
+                                </div>
+                                add&nbsp;<i data-feather="user-plus"></i>
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -278,6 +324,7 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Mobile</th>
+                                <th>Delete</th>
                             </tr>
                         </thead>
                         <tbody id="tbody">
@@ -294,22 +341,89 @@
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script>
-        $(document).ready(function(){
+        $(document).ready(function() {
+            $("#loading").hide();
             getAllUsers();
+            feather.replace() //feather icons
         });
+
         function getAllUsers() {
             $.get("/admin/users/all", function(data) {
                 var tbody = '';
                 if (data.success == true) {
                     var serial = 1;
                     $.each(data.users, function() {
-                        tbody += '<tr><td>' + serial + '</td><td>' + this.name + '</td><td>' + this.email + '</td><td>' + this.mobile + '</td></tr>';
-                        serial++
+                        if (this.is_superadmin == false) {
+                            tbody += '<tr><td>' + serial + '</td><td>' + this.name + '</td><td>' + this.email + '</td><td>' + this.mobile + '</td><td><button class="btn btn-danger" data-email="' + this.email + '" data-id="' + this.id + '" onclick="deleteAdmin(this)" ><i data-feather="user-x"></i></button></td></tr>';
+                            serial++
+                        }
                     });
                     $("#tbody").html(tbody);
+                    feather.replace() //feather icons
                 }
             });
         }
+
+        function deleteAdmin(elem) {
+            var email = $(elem).attr("data-email");
+            if (confirm("Are you sure you want to delete, " + email + " ")) {
+                $.post("/admin/delete", {
+                        'email': email,
+                    })
+                    .done(function(data) {
+                        if (data.success === true) {
+                            var msg = '<br><div class="alert alert-success" role="alert">' + data.msg + '</div><br>';
+                            $("#alert").html(msg);
+                        } else {
+                            var msg = '<br><div class="alert alert-danger" role="alert"><ul>';
+                            $.each(data.errors, function(key, value) {
+                                msg += '<li>' + value + '</li>';
+                            });
+                            msg += '</ul></div><br>';
+                        }
+
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+
+                        getAllUsers();
+
+                    });
+            }
+        }
+
+        // search form
+        $("#add-admin").submit(function(e) {
+            e.preventDefault(); // prevent actual form submit
+            var form = $(this);
+            var url = form.attr('action'); //get submit url [replace url here if desired]
+            $("#loading").show();
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(), // serializes form input
+                success: function(data) {
+                    if (data.success == true) {
+                        var msg = '<br><div class="alert alert-success" role="alert">' + data.msg + '</div><br>';
+                        $("#alert").html(msg);
+                        getAllUsers();
+                    } else {
+                        var msg = '<br><div class="alert alert-danger" role="alert"><ul>';
+                        $.each(data.errors, function(key, value) {
+                            msg += '<li>' + value + '</li>';
+                        });
+                        msg += '</ul></div><br>';
+                    }
+                    $("#alert").html(msg);
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                    $("#loading").hide();
+                }
+            });
+        });
     </script>
 </body>
 

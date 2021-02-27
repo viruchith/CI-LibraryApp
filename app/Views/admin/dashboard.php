@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title>Add Books</title>
+    <title>Dashboard</title>
     <!--Google fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet">
@@ -150,13 +150,13 @@
 <body>
 
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Company name</a>
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/admin/dashboard">CSE Library</a>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <ul class="navbar-nav px-3">
             <li class="nav-item text-nowrap">
-                <a class="nav-link" href="#">Sign out</a>
+                <a class="nav-link" href="/admin/logout">Sign out</a>
             </li>
         </ul>
     </header>
@@ -173,7 +173,7 @@
                     </h6>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="/admin/dashboard">
+                            <a class="nav-link active" aria-current="page" href="/admin/dashboard">
                                 <span data-feather="home"></span>
                                 Dashboard
                             </a>
@@ -225,7 +225,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="/book/uploadcsv">
+                            <a class="nav-link" href="/book/uploadcsv">
                                 <span data-feather="file"></span>
                                 Upload CSV
                             </a>
@@ -257,54 +257,121 @@
                                 Report
                             </a>
                         </li>
+
+                        
                     </ul>
                 </div>
             </nav>
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Add Books</h1>
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="btn-group me-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-                        </div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                            <span data-feather="calendar"></span>
-                            This week
-                        </button>
-                    </div>
+                    <h2 class="h2">
+                        All Books
+                    </h2>
                 </div>
-
-                <div class="container">
-                    <div class="container">
-                        <form action="/book/uploadcsv" method="POST">
-                            <?php if (isset($validation)) : ?>
-                                <div class="container">
-                                    <div class="alert alert-danger" role="alert">
-                                        <?= $validation->listErrors() ?>
-                                    </div>
+                <br>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="display-4" id="books-total-count" data-count="<?= $books_total_count ?>">
                                 </div>
-                            <?php endif; ?>
-                            <div class="mb-3">
-                                <label for="file" class="form-label">CSV File</label>
-                                <input type="file" accept=".csv" class="form-control" name="books" id="file" required>
                             </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </form>
+                        </div>
                     </div>
-                </div>
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="display-4" id="books-titles-count" data-count="<?= $books_titles_count ?>">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="container-fluid overflow-auto">
+                        <canvas id="titles-chart" width="150" height="150"></canvas>
+                    </div>
             </main>
         </div>
     </div>
-
-
+    <br>
+    <hr>
+    <br>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw==" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-    <script>
+    <script type="module">
+        import { CountUp } from 'https://cdn.jsdelivr.net/npm/countup.js@2.0.7/dist/countUp.min.js';
+        //CountUp
+        function Counter(options,id){
+
+            var total_books = $("#"+id).attr("data-count");
+
+            let demo = new CountUp(id, total_books, options);
+            if (!demo.error) {
+                demo.start();
+            } else {
+                console.error(demo.error);
+            }
+        }
+    
         $(document).ready(function() {
-            feather.replace() //feather icons
+            feather.replace();
+            Counter( {duration: 5,suffix: '<br>Books'},'books-total-count');
+            Counter( {duration: 5,suffix: '<br>Titles'},'books-titles-count');
+
+        });
+    </script>
+    <script>
+        function plot(titles, count) {
+            var ctx = document.getElementById('titles-chart').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: titles,
+                    datasets: [{
+                        label: '# books',
+                        data: count,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+
+        $.get("/admin/dashboard?data=titles", function(data) {
+            let countArr = [];
+            let titlesArr = [];
+            $.each(data.titles, function() {
+                titlesArr.push(this.title);
+                countArr.push(this.quantity);
+            });
+            plot(titlesArr, countArr);
         });
     </script>
 </body>

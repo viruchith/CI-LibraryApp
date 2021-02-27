@@ -5,11 +5,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title>Add Books</title>
+    <title>Add Book</title>
     <!--Google fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet">
-
     <!-- Bootstrap core CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 
@@ -225,13 +224,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="/book/uploadcsv">
+                            <a class="nav-link" href="/book/uploadcsv">
                                 <span data-feather="file"></span>
                                 Upload CSV
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/book/add">
+                            <a class="nav-link active" href="/book/add">
                                 <span data-feather="plus"></span>
                                 Add Book
                             </a>
@@ -263,7 +262,7 @@
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Add Books</h1>
+                    <h2 class="h2">Add Book</h2>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <div class="btn-group me-2">
                             <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
@@ -278,22 +277,70 @@
 
                 <div class="container">
                     <div class="container">
-                        <form action="/book/uploadcsv" method="POST">
-                            <?php if (isset($validation)) : ?>
-                                <div class="container">
-                                    <div class="alert alert-danger" role="alert">
-                                        <?= $validation->listErrors() ?>
+                        <br>
+                        <center>
+                            <h1>Add</h1>
+                        </center>
+                        <div id="alert">
+
+                        </div>
+                        <form id="addBook-form" action="/book/add">
+                            <div class="form-group">
+                                <label for="">
+                                    Reference Number :
+                                </label>
+                                <input type="text" class="form-control" id="ref_num" name="ref_num" aria-describedby="helpId" placeholder="Reference Num" maxlength="128" required>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="">Title :</label>
+                                <input type="text" class="form-control" id="title" name="title" aria-describedby="helpId" placeholder="Book Title" maxlength="128" required>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="">Author :</label>
+                                <input type="text" class="form-control" id="author" name="author" aria-describedby="helpId" placeholder="Book Author" maxlength="128" required>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="">Publisher :</label>
+                                <input type="text" class="form-control" id="publisher" name="publisher" aria-describedby="helpId" placeholder="Book Publisher" maxlength="128" required>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary">Add &nbsp;<i data-feather="plus-circle"></i></button> &nbsp;&nbsp; <button type="reset" class="btn btn-warning">Clear</button>
+                            <div id="loading">
+                                <div class="d-flex justify-content-center">
+                                    <div class="spinner-grow text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <div class="spinner-grow text-secondary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <div class="spinner-grow text-success" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <div class="spinner-grow text-danger" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <div class="spinner-grow text-warning" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <div class="spinner-grow text-info" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <div class="spinner-grow text-light" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <div class="spinner-grow text-dark" role="status">
+                                        <span class="visually-hidden">Loading...</span>
                                     </div>
                                 </div>
-                            <?php endif; ?>
-                            <div class="mb-3">
-                                <label for="file" class="form-label">CSV File</label>
-                                <input type="file" accept=".csv" class="form-control" name="books" id="file" required>
                             </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
+                        <hr>
                     </div>
                 </div>
+                <br>
             </main>
         </div>
     </div>
@@ -304,7 +351,35 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script>
         $(document).ready(function() {
+            $("#loading").hide();
             feather.replace() //feather icons
+        });
+        $("#addBook-form").submit(function(e) {
+            e.preventDefault(); // prevent actual form submit
+            var form = $(this);
+            var url = form.attr('action'); //get submit url [replace url here if desired]
+            $("#loading").show();
+            $("#alert").html("");
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(), // serializes form input
+                success: function(data) {
+                    if (data.success == true) {
+                        var msg = '<br><div class="alert alert-success" role="alert">Book added successfully !</div><br>';
+                    } else {
+                        var msg = '<br><div class="alert alert-danger" role="alert"><ul>';
+                        $.each(data.errors, function(key, value) {
+                            msg += '<li>' + value + '</li>';
+                        });
+                        msg += '</ul></div><br>';
+                    }
+                    $("#alert").html(msg);
+                },
+                done: function() {
+                    $("#loading").hide();
+                }
+            });
         });
     </script>
 </body>

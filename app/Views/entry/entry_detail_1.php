@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title>Add Books</title>
+    <title>Issue : <?= $issue_id ?></title>
     <!--Google fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet">
@@ -173,7 +173,7 @@
                     </h6>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="/admin/dashboard">
+                            <a class="nav-link" href="/admin/dashboard">
                                 <span data-feather="home"></span>
                                 Dashboard
                             </a>
@@ -225,7 +225,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="/book/uploadcsv">
+                            <a class="nav-link" href="/book/uploadcsv">
                                 <span data-feather="file"></span>
                                 Upload CSV
                             </a>
@@ -263,7 +263,8 @@
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Add Books</h1>
+                    <h2 class="h2">
+                        Issue : <span class="badge bg-info text-dark"><?= $issue_id ?></span> </h2>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <div class="btn-group me-2">
                             <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
@@ -278,22 +279,75 @@
 
                 <div class="container">
                     <div class="container">
-                        <form action="/book/uploadcsv" method="POST">
-                            <?php if (isset($validation)) : ?>
-                                <div class="container">
-                                    <div class="alert alert-danger" role="alert">
-                                        <?= $validation->listErrors() ?>
-                                    </div>
+                        <form id="add-admin" action="/admin/add" method="post">
+                            <div>
+                                <h4>Issue Id : <?= $issue_id ?> </h4>
+                                <label for="">
+                                    Reference Number :
+                                </label>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" value="<?= $book_ref_num ?>" id="book_ref_num" name="ref_num" aria-describedby="helpId" placeholder="Reference Num" maxlength="128" disabled>
                                 </div>
-                            <?php endif; ?>
-                            <div class="mb-3">
-                                <label for="file" class="form-label">CSV File</label>
-                                <input type="file" accept=".csv" class="form-control" name="books" id="file" required>
+                                <br>
+                                <div class="form-group">
+                                    <label for="">Title :</label>
+                                    <input type="text" class="form-control" value="<?= $book_title ?>" id="title" name="title" aria-describedby="helpId" placeholder="Book Title" maxlength="128" disabled>
+                                </div>
+                                <br>
+                                <div class="form-group">
+                                    <label for="">Author :</label>
+                                    <input type="text" class="form-control" value="<?= $book_author ?>" id="author" name="author" aria-describedby="helpId" placeholder="Book Author" maxlength="128" disabled>
+                                </div>
+                                <br>
+                                <div class="form-group">
+                                    <label for="">Member ID :</label>
+                                    <input type="text" class="form-control" value="<?= $member_id ?>" id="member_id" name="member_id" aria-describedby="helpId" placeholder="Member ID" maxlength="128" disabled>
+                                </div>
+                                <br>
+                                <div class="form-group">
+                                    <label for="">Member Role :</label>
+                                    <input type="text" class="form-control" value="<?= $member_role ?>" name="" id="" disabled>
+                                </div>
+                                <br>
+                                <div class="form-group">
+                                    <label for="">Member Name :</label>
+                                    <input type="text" class="form-control" value="<?= $member_name ?>" id="member_name" name="member_name" aria-describedby="helpId" placeholder="Member Name" maxlength="200" disabled>
+                                </div>
+                                <br>
+                                <div class="form-group">
+                                    <label for="">Member Email :</label>
+                                    <input type="email" class="form-control" value="<?= $member_email ?>" id="member_email" name="member_email" aria-describedby="helpId" placeholder="Member Email" maxlength="200" disabled>
+                                </div>
+                                <br>
+                                <div class="form-group">
+                                    <label for="">Member Mobile :</label>
+                                    <input type="text" class="form-control" value="<?= $member_mobile ?>" id="member_mobile" name="member_mobile" aria-describedby="helpId" placeholder="Member Mobile" pattern="[0-9]{10}" disabled>
+                                </div>
+                                <br>
+                                <div class="form-group">
+                                    <label for="">Issue Date : </label>
+                                    <input type="text" class="form-control" value="<?= date("d/m/Y g:i:s:a", strtotime($issue_time)) ?>" id="member_mobile" name="member_mobile" aria-describedby="helpId" placeholder="Member Mobile" disabled>
+                                </div>
+
+                                <br>
+                                <div class="form-group">
+                                    <?php
+
+                                    if (!$is_returned) {
+                                        echo '<label for="">Returned book : No&nbsp;<span class="badge bg-danger"><i data-feather="x-circle"></i></span> </label><br><small>' . round((time() - strtotime($issue_time)) / (60 * 60 * 24)) . ' days since issue</small>';
+                                    } else {
+                                        echo '<label for="">Returned book : Yes&nbsp;<span class="badge bg-success"><i data-feather="check-circle"></i></span> </label><br>';
+                                        echo '<label for="">Returned on : ' . date("d/m/Y g:i:s:a", strtotime($return_time)) . '</label><br>Returned after ' . round((strtotime($return_time) - strtotime($issue_time)) / (60 * 60 * 24)) . ' days ';
+                                    }
+
+                                    ?>
+                                </div>
+
                             </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
                     </div>
                 </div>
+                <br>
             </main>
         </div>
     </div>
@@ -304,6 +358,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script>
         $(document).ready(function() {
+            $("#loading").hide();
             feather.replace() //feather icons
         });
     </script>

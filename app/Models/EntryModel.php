@@ -79,4 +79,30 @@ class EntryModel extends Model{
             return false;
         }
     }
+
+    public function fetchAllEntries(){
+        return $this->orderBy('issue_time','DESC')->paginate(100);
+    }
+
+    public function fetchAllPendingEntries(){
+        return $this->orderBy('issue_time', 'DESC')->where(['is_returned'=>false])->paginate(100);
+    }
+
+    public function fetchAllReturnedEntries()
+    {
+        return $this->orderBy('issue_time', 'DESC')->where(['is_returned' => true])->paginate(100);
+    }
+
+    public function fetchEntriesByDate($from,$to){
+        $from = $this->escape($from);
+        $to = $this->escape($to);
+
+        $entry_q = $this->query("SELECT * FROM cse_library_entries WHERE issue_time BETWEEN ".$from." AND ".$to." ORDER BY issue_time DESC LIMIT 400");
+        return $entry_q->getResultArray();
+
+    }
+
+    public function fetchPendingEntriesByMemberId($member_id){
+        return $this->where(['member_id'=>$member_id,'is_returned'=>false])->findAll();
+    }
 }

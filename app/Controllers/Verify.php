@@ -75,8 +75,10 @@ class Verify extends BaseController
                             $data['validation'] = $this->validator;
                         }else{
                             $data['issue_time'] = date('Y-m-d H:i:s', time());
+                            //delete token after successful validation
+                            $this->cache_token->deleteToken('cse:library:issue:'.$issue_id);
                             if($entry_model->addEntry($data)){
-                                return redirect()->to("/book/issue/".$issue_id);
+                                return redirect()->to("/entry/".$issue_id);
                             }else{
                                 return "ISSUE FAILED !";
                             }
@@ -95,15 +97,16 @@ class Verify extends BaseController
                         if (!$this->validate($rules)) {
                             $data['validation'] = $this->validator;
                         } else {
+                            $data['issue_time'] = date('Y-m-d H:i:s', time());
                             if ($entry_model->addEntry($data)) {
-                                return "Success, Book Issued !";
+                                return redirect()->to("/entry/" . $issue_id);
                             } else {
                                 return "ISSUE FAILED !";
                             }   
                         }
                     }
                     
-                    return view('book/verify_issue', $data);
+                    return view('book/verify_issue_book', $data);
 
                 } else {
                     return "Invalid or Expired Token !";

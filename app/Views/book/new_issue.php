@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title>Add Books</title>
+    <title>Issue Book</title>
     <!--Google fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet">
@@ -213,7 +213,7 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="/book/issue">
+                            <a class="nav-link active" href="/book/issue">
                                 <span data-feather="plus-square"></span>
                                 Issue Book
                             </a>
@@ -225,7 +225,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="/book/uploadcsv">
+                            <a class="nav-link" href="/book/uploadcsv">
                                 <span data-feather="file"></span>
                                 Upload CSV
                             </a>
@@ -263,7 +263,7 @@
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Add Books</h1>
+                    <h2 class="h2">Issue Book</h2>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <div class="btn-group me-2">
                             <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
@@ -278,22 +278,107 @@
 
                 <div class="container">
                     <div class="container">
-                        <form action="/book/uploadcsv" method="POST">
-                            <?php if (isset($validation)) : ?>
-                                <div class="container">
+                        <br>
+                        <center>
+                            <h1>New Issue</h1>
+                        </center>
+                        <div id="alert">
+                            <?php
+                            if (isset($error_msg)) {
+                                echo '
                                     <div class="alert alert-danger" role="alert">
-                                        <?= $validation->listErrors() ?>
+                                        <strong>' . $error_msg . '</strong>
+                                    </div>
+                                ';
+                            }
+                            ?>
+                        </div>
+                        <form id="issueBook-form" action="/book/issue">
+                            <label for="">
+                                Reference Number :
+                            </label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" id="book_ref_num" name="ref_num" value="<?= $ref_num ?>" aria-describedby="helpId" placeholder="Reference Num" maxlength="128" required>
+                                <button type="button" class="btn btn-primary" onclick="loadBook()"><i data-feather="book-open"></i></button>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="">Title :</label>
+                                <input type="text" class="form-control" id="title" name="title" value="<?= $title ?>" aria-describedby="helpId" placeholder="Book Title" maxlength="128" disabled required>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="">Author :</label>
+                                <input type="text" class="form-control" id="author" name="author" value="<?= $author ?>" aria-describedby="helpId" placeholder="Book Author" maxlength="128" disabled required>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="">Publisher :</label>
+                                <input type="text" class="form-control" id="publisher" name="publisher" value="<?= $publisher ?>" aria-describedby="helpId" placeholder="Book Publisher" maxlength="128" disabled required>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="">Member ID :</label>
+                                <input type="text" class="form-control" id="member_id" name="member_id" aria-describedby="helpId" placeholder="Member ID" maxlength="128" required>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="">Member Role :</label>
+                                <select class="form-select" name="member_role" aria-label="Member Role">
+                                    <option value="Student">Student</option>
+                                    <option value="Faculty">Faculty</option>
+                                </select>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="">Member Name :</label>
+                                <input type="text" class="form-control" id="member_name" name="member_name" aria-describedby="helpId" placeholder="Member Name" maxlength="200" required>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="">Member Email :</label>
+                                <input type="email" class="form-control" id="member_email" name="member_email" aria-describedby="helpId" placeholder="Member Email" maxlength="200" required>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="">Member Mobile :</label>
+                                <input type="text" class="form-control" id="member_mobile" name="member_mobile" aria-describedby="helpId" placeholder="Member Mobile" pattern="[0-9]{10}" required>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary">Proceed <i data-feather="arrow-right-circle"></i> </button> &nbsp;&nbsp; <button type="reset" class="btn btn-warning">Clear&nbsp;<i data-feather="x"></i></button>
+                            <div id="loading">
+                                <div class="d-flex justify-content-center">
+                                    <div class="spinner-grow text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <div class="spinner-grow text-secondary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <div class="spinner-grow text-success" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <div class="spinner-grow text-danger" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <div class="spinner-grow text-warning" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <div class="spinner-grow text-info" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <div class="spinner-grow text-light" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <div class="spinner-grow text-dark" role="status">
+                                        <span class="visually-hidden">Loading...</span>
                                     </div>
                                 </div>
-                            <?php endif; ?>
-                            <div class="mb-3">
-                                <label for="file" class="form-label">CSV File</label>
-                                <input type="file" accept=".csv" class="form-control" name="books" id="file" required>
                             </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
+                        <hr>
                     </div>
                 </div>
+                <br>
             </main>
         </div>
     </div>
@@ -304,8 +389,66 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script>
         $(document).ready(function() {
+            $("#loading").hide();
             feather.replace() //feather icons
         });
+
+        $("#issueBook-form").submit(function(e) {
+            e.preventDefault(); // prevent actual form submit
+            var form = $(this);
+            var url = form.attr('action'); //get submit url [replace url here if desired]
+            $("#loading").show();
+            $("#alert").html("");
+            $.ajax({
+                type: "POST",
+                url: url,
+                timeout: 10000,
+                data: form.serialize(), // serializes form input
+                success: function(data) {
+                    if (data.success == true) {
+                        var msg = '<br><div class="alert alert-success" role="alert"><h1>Please wait while your\'e being redirected !</h1></div><br>';
+                        $("#alert").html(msg);
+                        $(location).attr('href', '/verify/issue/' + data.issue_id);
+                    } else {
+                        var msg = '<br><div class="alert alert-danger" role="alert"><ul>';
+                        $.each(data.errors, function(key, value) {
+                            msg += '<li>' + value + '</li>';
+                        });
+                        msg += '</ul></div><br>';
+                        $("#alert").html(msg);
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                    }
+                    $("#loading").hide();
+                }
+            });
+        });
+
+        //Load Book
+        function loadBook() {
+            $("#alert").html('');
+            var ref_num = $('#book_ref_num').val();
+            if (ref_num === '') {
+                return alert('Reference Number is empty !');
+            } else {
+                $.get("/book/get?ref_num=" + ref_num, function(data) {
+                    if (data.success == false) {
+                        $("#issueBook-form")[0].reset(); //reset form
+                        $("#alert").html('<div class="alert alert-danger" role="alert"><strong>' + data.msg + '</strong></div>')
+                    } else if (data.book.status !== "available") {
+                        $("#issueBook-form")[0].reset(); //reset form
+                        $("#alert").html('<div class="alert alert-danger" role="alert"><strong>Book is not available !</strong></div>')
+                    } else {
+                        $("#title").val(data.book.title);
+                        $("#author").val(data.book.author);
+                        $("#publisher").val(data.book.publisher);
+                    }
+                });
+            }
+
+        }
     </script>
 </body>
 

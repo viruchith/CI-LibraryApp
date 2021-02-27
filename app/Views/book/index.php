@@ -124,14 +124,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js" integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg==" crossorigin="anonymous"></script>
     <script>
         var serial = 1;
-
+        var counter_val=1;
         $(document).ready(function() {
-            var counter_val = $("#counter_value").val();
             $("#loading").show();
             loadMoreData(counter_val);
             $("#loading").hide();
             counter_val++;
-            $("#counter_value").val(counter_val);
 
             $("#search").on("keyup", function() {
                 var value = $(this).val().toLowerCase();
@@ -147,7 +145,6 @@
             var scrollHeight = $(document).height();
             var scrollPosition = $(window).height() + $(window).scrollTop();
             if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
-                var counter_val = $("#counter_value").val();
                 $("#loading").show();
                 loadMoreData(counter_val);
                 $("#loading").hide();

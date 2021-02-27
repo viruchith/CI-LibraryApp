@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title>Add Books</title>
+    <title>Issue Report</title>
     <!--Google fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet">
@@ -41,6 +41,7 @@
         table {
             font-size: medium;
         }
+
 
         .feather {
             width: 16px;
@@ -173,7 +174,7 @@
                     </h6>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="/admin/dashboard">
+                            <a class="nav-link" href="/admin/dashboard">
                                 <span data-feather="home"></span>
                                 Dashboard
                             </a>
@@ -225,7 +226,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="/book/uploadcsv">
+                            <a class="nav-link" href="/book/uploadcsv">
                                 <span data-feather="file"></span>
                                 Upload CSV
                             </a>
@@ -252,46 +253,73 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/entry/report">
+                            <a class="nav-link active" href="/entry/report">
                                 <span data-feather="file-text"></span>
                                 Report
                             </a>
                         </li>
+
                     </ul>
                 </div>
             </nav>
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Add Books</h1>
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="btn-group me-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-                        </div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                            <span data-feather="calendar"></span>
-                            This week
-                        </button>
-                    </div>
+                    <h2 class="h2">
+                        Issue Report:
                 </div>
 
                 <div class="container">
                     <div class="container">
-                        <form action="/book/uploadcsv" method="POST">
-                            <?php if (isset($validation)) : ?>
-                                <div class="container">
-                                    <div class="alert alert-danger" role="alert">
-                                        <?= $validation->listErrors() ?>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-                            <div class="mb-3">
-                                <label for="file" class="form-label">CSV File</label>
-                                <input type="file" accept=".csv" class="form-control" name="books" id="file" required>
+                        <form id="entry-report" action="/entry/report" method="post">
+                            <div class="form-group">
+                                <label for="from">From <i data-feather="calendar"></i></label>
+                                <input type="date" class="form-control" name="from" id="from" aria-describedby="helpId" placeholder="" required>
                             </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="from">To &nbsp; <i data-feather="calendar"></i></label>
+                                <input type="date" class="form-control" name="to" id="to" aria-describedby="helpId" placeholder="" required>
+                            </div>
+                            <br>
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
+                    </div>
+                </div>
+                <br>
+                <hr>
+                <div class="container">
+                    <div class="d-flex">
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <div class="btn-group me-2">
+                                <button id="export-csv" type="button" class="btn btn-sm btn-warning">Export to CSV</button>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="table-responsive">
+                        <table id="entry-table" class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Issue Id</th>
+                                    <th>Ref num</th>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Member Id</th>
+                                    <th>Member Name</th>
+                                    <th>Member Email</th>
+                                    <th>Member Mobile</th>
+                                    <th>Member Role</th>
+                                    <th>Issue Time</th>
+                                    <th>Status</th>
+                                    <th>Return Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody">
+
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </main>
@@ -304,7 +332,130 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script>
         $(document).ready(function() {
+            $("#loading").hide();
             feather.replace() //feather icons
+        });
+
+        function entryStatus(code) {
+            if (code === '1')
+                return "<span class='badge bg-success'>Returned <i data-feather='check-circle'></i></span>";
+            else
+                return "<span class='badge bg-danger'>Pending  <i data-feather='x-circle'></i></span>";
+        }
+
+        function retrunDate(code, date) {
+            if (code === '1')
+                return new Date(date).toLocaleDateString();
+            else
+                return "NIL";
+
+        }
+
+
+        $("#entry-report").submit(function(e) {
+            e.preventDefault(); // prevent actual form submit
+            var form = $(this);
+            var url = form.attr('action'); //get submit url [replace url here if desired]
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(), // serializes form input
+                success: function(data) {
+                    if (data.success == true) {
+                        $("#tbody").html("");
+                        var tbody = '';
+                        var serial = 1;
+                        $.each(data.entries, function() {
+                            tbody += '<tr><td>' + serial + '</td><td>' + this.issue_id + '</td><td>' + this.book_ref_num + '</td><td>' + this.book_title + '</td><td>' + this.book_author + '</td><td>' + this.member_id + '</td><td>' + this.member_name + '</td><td>' + this.member_email + '</td><td>' + this.member_mobile + '</td><td>' + this.member_role + '</td><td>' + new Date(this.issue_time).toLocaleDateString() + '</td><td>' + entryStatus(this.is_returned) + '</td><td>' + retrunDate(this.is_returned, this.return_time) + '</td></tr>';
+                            serial++
+                        });
+                        $("#tbody").html(tbody);
+                        feather.replace() //feather icons
+                    } else {}
+                }
+            });
+        });
+
+        function timeInterval(fromDate, toDate) {
+            var now = new Date(toDate);
+            var then = new Date(fromDate);
+            var dayCount = 0;
+
+            while (now.setHours(1, 3, 3, 7) > then.setHours(1, 3, 3, 7)) {
+                then.setDate(then.getDate() + 1);
+                dayCount++;
+            }
+            while (now.setHours(1, 3, 3, 7) < then.setHours(1, 3, 3, 7)) {
+                now.setDate(now.getDate() + 1);
+                dayCount++;
+            }
+
+            var years = Math.floor(dayCount / 365);
+            dayCount = dayCount - years * 365;
+            var months = Math.floor(dayCount / 30);
+            dayCount = dayCount - months * 30;
+            var days = dayCount;
+
+            return {
+                years,
+                months,
+                days
+            };
+        }
+
+
+        function downloadCSV(csv, filename) {
+            var csvFile;
+            var downloadLink;
+
+            // CSV file
+            csvFile = new Blob([csv], {
+                type: "text/csv"
+            });
+
+            // Download link
+            downloadLink = document.createElement("a");
+
+            // File name
+            downloadLink.download = filename;
+
+            // Create a link to the file
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+
+            // Hide download link
+            downloadLink.style.display = "none";
+
+            // Add the link to DOM
+            document.body.appendChild(downloadLink);
+
+            // Click download link
+            downloadLink.click();
+        }
+
+        function exportTableToCSV() {
+            var csv = [];
+            var rows = document.querySelectorAll("#entry-table tr");
+
+            if (rows.length > 1) {
+                for (var i = 0; i < rows.length; i++) {
+                    var row = [],
+                        cols = rows[i].querySelectorAll("td, th");
+
+                    for (var j = 0; j < cols.length; j++)
+                        row.push('"' + cols[j].innerText + '"');
+                    csv.push(row.join(","));
+                }
+
+                // Download CSV file
+                downloadCSV(csv.join("\n"), "report.csv");
+            } else {
+                alert("No data to export !");
+            }
+        }
+
+        //export-csv Btn
+        $("#export-csv").click(function() {
+            exportTableToCSV();
         });
     </script>
 </body>

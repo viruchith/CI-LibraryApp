@@ -34,7 +34,15 @@ class Book extends BaseController
 
 	public function index()
 	{
-		return view("book/index");	
+		if($this->admin_auth->isAuthenticated()){
+			$data=[
+				'books_count'=>$this->book_model->fetchAllBooksCount()
+			];
+
+			return view("book/all", $data);	
+		}else{
+			return redirect()->to('/admin');
+		}
 	}
 
 	public function all(){
@@ -84,7 +92,7 @@ class Book extends BaseController
 
 		}
 
-		return view('book/search');
+		return view('book/search_books');
 	}
 
 	public function get(){
@@ -147,7 +155,7 @@ class Book extends BaseController
 
 				}
 			}
-			return view('book/add');
+			return view('book/add_book');
 		}else{
 			return redirect()->to('/admin');
 		}
@@ -304,16 +312,21 @@ class Book extends BaseController
 }
 
 
-public function issueBook(){
+public function issue(){
 	if($this->admin_auth->isAuthenticated()){
 		
-		$data=array();
+		$data=array(
+			'ref_num'=>'',
+			'title'=>'',
+			'author'=>'',
+			'publisher'=>''
+		);
 
-		if($this->request->isAJAX()){
+		if($this->request->getMethod(true)==='POST'){
 			$rules=[
-				"ref_num"=> "required|alpha_dash|max_length[20]|bookExists[ref_num]|bookAvailable[ref_num]",
-				"member_id"=>"required|alpha_dash|max_length[20]",
-				"member_name"=>"required|alpha_dash|max_length[250]",
+				"ref_num"=> "required|alpha_numeric_space|max_length[20]|bookExists[ref_num]|bookAvailable[ref_num]",
+				"member_id"=> "required|alpha_numeric_space|max_length[20]",
+				"member_name"=> "required|alpha_numeric_space|max_length[250]",
 				"member_email"=>"required|valid_email|max_length[250]",		
 				"member_mobile"=>"required|numeric|exact_length[10]",
 				"member_role"=>"required|validateRole[member_role]"
@@ -328,7 +341,7 @@ public function issueBook(){
 					$data['success'] = false;
 					$data['errors'] = $this->validator->getErrors();
 				} else {
-					$issue_id = "IS".bin2hex(random_bytes(4));
+					$issue_id =strtoupper("IS".bin2hex(random_bytes(4)));
 
 					$book=$this->book_model->fetchBookByRefNum($this->request->getPost('ref_num'));
 
@@ -363,9 +376,20 @@ public function issueBook(){
 			
 			}
 
-	
+		if($this->request->getGet('ref_num')){
+			$ref_num = $this->request->getGet('ref_num', FILTER_SANITIZE_STRING);
+			$book = $this->book_model->checkBookAvailability($ref_num);
+			if(isset($book['ref_num'])){
+				$data['ref_num'] = $book['ref_num'];
+				$data['title'] = $book['title'];
+				$data['author'] = $book['author'];
+				$data['publisher'] = $book['publisher'];
+			}else{
+				$data['error_msg'] = $book;
+			}
+		}
 			
-		return view('book/issue');
+		return view('book/new_issue',$data);
 
 	}
 	else{
@@ -374,36 +398,23 @@ public function issueBook(){
 }
 
 
-public function issue($issue_id=false){
-	if(!empty($issue_id) & $issue_id!==false){
-		if ($this->admin_auth->isAuthenticated()) {
-			$entry = $this->entry_model->fetchEntry($issue_id);
-			if(!empty($entry)){
-				return view('book/entry_detail',$entry);
-			}else{
-				return "Entry Does not Exist";
-			}
-		} else {
-			return redirect()->to('/admin');
-		}
-		
-	}else{
-		return "Invalid Request! Missing URL Parameter";
-	}
-}
 
-public function returnBook(){
+
+public function return(){
 	if($this->admin_auth->isAuthenticated()){
 		
 		$data = array(
-			'book_ref_num'=>''
+			'book_ref_num'=>'',
+			'message_exists'=>false
 		);
 
 		if($this->request->getGet('ref_num')){
 			$ref_num = $this->request->getGet('ref_num') ?? '';
 			$entry = $this->entry_model->fetchEntryByRefNum($ref_num);
 
-			if(isset($entry)){
+			$data['message_exists'] = true;
+
+			if(!empty($entry)){
 				$data['success'] = true ;
 				$data['msg'] = 'Entry Exists';
 				$data['entry_exists'] = true ;
@@ -424,7 +435,7 @@ public function returnBook(){
 
 			$errors = [
 				"pin"=>[
-					"validateAdminPin"=>"Invalid Pin !"
+					"verifyAdminPin"=>"Invalid Pin !"
 				]
 			];
 
@@ -438,7 +449,7 @@ public function returnBook(){
 				$issue_id = $this->request->getPost('issue_id') ;
 
 				if ($this->entry_model->returnBookEntry($ref_num)) {
-					return redirect()->to('/book/issue/'.$issue_id);
+					return redirect()->to("/entry//".$issue_id);
 				} else {
 					return "Transaction Failed !";
 				}
@@ -448,7 +459,7 @@ public function returnBook(){
 
 		}
 
-		return view('book/return_book',$data);
+		return view('book/return_book_1',$data);
 	}else{
 		return redirect()->to('/admin');
 	}
