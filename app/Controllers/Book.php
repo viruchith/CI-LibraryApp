@@ -279,7 +279,6 @@ class Book extends BaseController
 	}
 
 	private function save($filename){
-		$row = 1;
 		echo '
 			<table>
 			<tr>
@@ -292,14 +291,12 @@ class Book extends BaseController
 		';
 		if (($handle = fopen(WRITEPATH."uploads/CSV/".$filename, "r")) !== FALSE) {
 			while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-				$row++;
 				try {
-					$success = $this->book_model->addBook($data[0], $data[1], $data[2], $data[3]);
+					$success = $this->book_model->addBook( htmlentities($data[0]), htmlentities($data[1]), htmlentities($data[2]), htmlentities($data[3]));
 				} catch
 				(\mysqli_sql_exception $e ) {
 					$success=false;
 				}
-					$success=$this->book_model->addBook($data[0], $data[1], $data[2], $data[3]);
 					if($success){
 					echo "<tr><td> " . $data[0] . "</td><td>" . $data[1] . "</td><td>" . $data[2] . "</td><td>" . $data[3] . "</td><td>Success</td></tr>";
 					}else{
@@ -329,7 +326,7 @@ public function issue(){
 				"member_name"=> "required|alpha_numeric_space|max_length[250]",
 				"member_email"=>"required|valid_email|max_length[250]",		
 				"member_mobile"=>"required|numeric|exact_length[10]",
-				"member_role"=>"required|validateRole[member_role]"
+				"member_role"=>"required|validateRole[member_role]",
 			];
 
 			$errors = [
@@ -357,6 +354,7 @@ public function issue(){
 					'member_email' => $this->request->getPost('member_email'),
 					'member_mobile' => $this->request->getPost('member_mobile'),
 					'member_role' => $this->request->getPost('member_role'),
+					'batch' => $this->request->getPost('batch') ?? '',
 					'otp' => hash('sha384',$otp),
 					'otp_time'=>time()+((5*60)+5)
 				];
@@ -459,14 +457,10 @@ public function return(){
 
 		}
 
-		return view('book/return_book_1',$data);
+		return view('book/return_book',$data);
 	}else{
 		return redirect()->to('/admin');
 	}
-}
-
-public function demo(){
-	return "";
 }
 	
 }

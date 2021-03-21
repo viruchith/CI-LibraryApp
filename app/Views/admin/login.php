@@ -191,6 +191,9 @@
                     </div>
                 </div>
             <?php endif; ?>
+            <div class="d-flex justify-content-center">
+            <a href="/admin/forgotpassword"><h5>Forgot your password ?</h5></a>
+            </div>
         </form>
     </div><!-- End: Login Form Clean -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

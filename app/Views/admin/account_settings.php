@@ -149,13 +149,13 @@
 <body>
 
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Company name</a>
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">CSE Library</a>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <ul class="navbar-nav px-3">
             <li class="nav-item text-nowrap">
-                <a class="nav-link" href="#">Sign out</a>
+                <a class="nav-link" href="/admin/logout">Sign out</a>
             </li>
         </ul>
     </header>
@@ -256,6 +256,18 @@
                                 Report
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/entry/batch">
+                                <span data-feather="users"></span>
+                                Batch Report
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/entry/search">
+                                <span data-feather="search"></span>
+                                Search
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -263,16 +275,6 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h2 class="h2">Account Settings</h2>
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="btn-group me-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-                        </div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                            <span data-feather="calendar"></span>
-                            This week
-                        </button>
-                    </div>
                 </div>
 
                 <div class="container">
@@ -419,6 +421,63 @@
                     </div>
                 </div>
                 <br>
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h2 class="h2"> Batch Settings</h2>
+                </div>
+                <div class="container">
+                    <div class="container">
+                        <div id="batch-alert">
+
+                        </div>
+                        <form id="add-batch-form" action="/batch/add" method="post">
+                            <div class="form-group">
+                                <label for="">Add Batch : </label>
+                                <input type="text" class="form-control" name="batch" id="batch" pattern="[0-9]{4}-[0-9]{4}" placeholder="yyyy-yyyy" minlength="9" required>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary">Add</button>
+                            <div id="add-batch-spinner">
+                                <div class="spinner-grow text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-secondary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-success" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-danger" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-warning" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-info" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-light" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-dark" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <br>
+                <div class="container">
+                    <div class="container">
+                        <div class="container">
+                            <ul id="batch-list" class="list-group">
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <hr>
+                <br>
             </main>
         </div>
     </div>
@@ -432,7 +491,10 @@
             $('#change-details-spinner').hide();
             $('#change-pin-spinner').hide();
             $('#change-password-spinner').hide();
+            $('#add-batch-spinner').hide();
             feather.replace() //feather icons
+            loadBatches() //load batches available
+            /*Year Picker*/
         });
         // change pin form
         $("#change-pin-form").submit(
@@ -535,6 +597,95 @@
                 });
             }
         );
+
+
+        //validate Batch
+        function validateBatch() {
+            let batch = $("#batch").val();
+            let years = batch.split('-');
+            let start = parseInt(years[0]);
+            let end = parseInt(years[1]);
+
+            if ((end - start) >= 4) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        //Add Batch Form
+        $("#add-batch-form").submit(
+            function(e) {
+                e.preventDefault(); // prevent actual form submit
+                $('#add-batch-spinner').show();
+                var form = $(this);
+                var url = form.attr('action');
+
+                if (validateBatch()) {
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        timeout: 10000,
+                        data: form.serialize(), //
+                        success: function(data) {
+                            if (data.success === true) {
+                                $("#batch-alert").html('<br><div class="alert alert-success" role="alert"><strong>' + data.msg + '</strong></div><br>');
+                            } else {
+                                var msg = '<br><div class="alert alert-danger" role="alert"><ul>';
+                                $.each(data.errors, function(key, value) {
+                                    msg += '<li><strong>' + value + '</strong></li>';
+                                });
+                                msg += '</ul></div><br>';
+                                $("#batch-alert").html(msg);
+                            }
+                        }
+                    }); //end of ajax
+                    loadBatches();
+                } else {
+                    $("#batch-alert").html('<br><div class="alert alert-danger" role="alert"><strong>Invalid Batch Input !</strong></div><br>');
+                }
+                $('#add-batch-spinner').hide();
+            }
+        );
+
+
+
+
+        function loadBatches() {
+            $('#add-batch-spinner').show();
+            $.get("/batch", function(data) {
+                let items = '';
+                $.each(data, function(key, val) {
+                    items += '<li class="list-group-item" data-batch="' + key + '" >' + key + '&nbsp;<button data-batch="' + key + '" onclick=deleteBatch(this) class="btn btn-danger"><i data-feather="x-circle" ></i></button></li>';
+                });
+                $("#batch-list").html(items);
+                feather.replace();
+                $('#add-batch-spinner').hide();
+            });
+        }
+
+
+        function deleteBatch(elem) {
+            let batch = $(elem).attr("data-batch");
+            if (confirm('Are you sure you want to delete ' + batch + ' ?')) {
+                $.post("/batch/delete", {
+                    "batch": batch
+                }).done(function(data) {
+                    if (data.success === true) {
+                        $("#batch-alert").html('<br><div class="alert alert-success" role="alert"><strong>' + data.msg + '</strong></div><br>');
+                    } else {
+                        var msg = '<br><div class="alert alert-danger" role="alert"><ul>';
+                        $.each(data.errors, function(key, value) {
+                            msg += '<li><strong>' + value + '</strong></li>';
+                        });
+                        msg += '</ul></div><br>';
+                        $("#batch-alert").html(msg);
+                    }
+                    loadBatches();
+                });
+            }
+        }
     </script>
 </body>
 

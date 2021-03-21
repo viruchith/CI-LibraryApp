@@ -37,6 +37,8 @@ $routes->get('/admin','Admin::index');
 $routes->post('/admin','Admin::index');
 
 #Entry Routes
+$routes->get('/entry/batch', 'Entry::batch');
+$routes->get('/entry/search', 'Entry::search');
 $routes->get('/entry/get', 'Entry::get');
 $routes->get('/entry/all', 'Entry::all');
 $routes->get('/entry/report', 'Entry::report');

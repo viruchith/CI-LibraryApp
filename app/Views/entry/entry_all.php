@@ -150,13 +150,13 @@
 <body>
 
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Company name</a>
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">CSE Library</a>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <ul class="navbar-nav px-3">
             <li class="nav-item text-nowrap">
-                <a class="nav-link" href="#">Sign out</a>
+                <a class="nav-link" href="/admin/logout">Sign out</a>
             </li>
         </ul>
     </header>
@@ -257,6 +257,18 @@
                                 Report
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/entry/batch">
+                                <span data-feather="users"></span>
+                                Batch Report
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/entry/search">
+                                <span data-feather="search"></span>
+                                Search
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -264,16 +276,6 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h2 class="h2">All Entries</h2>
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="btn-group me-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-                        </div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                            <span data-feather="calendar"></span>
-                            This week
-                        </button>
-                    </div>
                 </div>
 
                 <div class="container">
@@ -315,6 +317,7 @@
                                                 <th>Member Email</th>
                                                 <th>Member Mobile</th>
                                                 <th>Member Role</th>
+                                                <th>Batch</th>
                                                 <th>Issue Time</th>
                                                 <th>Status</th>
                                                 <th>Return Time</th>
@@ -341,7 +344,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 id="pending-title" class="modal-title">Modal title</h5>
+                    <h5 id="pending-title" class="modal-title"></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -386,7 +389,7 @@
                 return "<span class='badge bg-danger'>Pending  <i data-feather='x-circle'></i></span>";
         }
 
-        function retrunDate(code, date) {
+        function returnDate(code, date) {
             if (code === '1')
                 return new Date(date).toLocaleDateString("en-IN");
             else
@@ -394,13 +397,20 @@
 
         }
 
+        function validBatch(role, batch) {
+            if (role === "Student") {
+                return batch;
+            } else {
+                return "NIL";
+            }
+        }
+
         function loadAllEntries() {
             $.get("/entry/get?id=all-entries&page=" + all_page_num, function(data) {
                 var tbody = '';
                 if (data.success == true) {
-                    var serial = 1;
                     $.each(data.entries, function() {
-                        tbody += '<tr><td>' + serial + '</td><td>' + this.issue_id + '</td><td>' + this.book_ref_num + '</td><td>' + this.book_title + '</td><td>' + this.book_author + '</td><td><span class="badge bg-secondary" onclick="showPendingEntries(' + this.member_id + ')" >' + this.member_id + '</span></td><td>' + this.member_name + '</td><td>' + this.member_email + '</td><td>' + this.member_mobile + '</td><td>' + this.member_role + '</td><td>' + new Date(this.issue_time).toLocaleDateString("en-IN") + '</td><td>' + entryStatus(this.is_returned) + '</td><td>' + retrunDate(this.is_returned, this.return_time) + '</td></tr>';
+                        tbody += '<tr><td>' + serial + '</td><td><a href="/entry/' + this.issue_id + '" target="_blank" >' + this.issue_id + '</a></td><td>' + this.book_ref_num + '</td><td>' + this.book_title + '</td><td>' + this.book_author + '</td><td><span class="badge bg-secondary" onclick="showPendingEntries(\'' + this.member_id + '\')" >' + this.member_id + '</span></td><td>' + this.member_name + '</td><td>' + this.member_email + '</td><td>' + this.member_mobile + '</td><td>' + this.member_role + '</td><td>' + validBatch(this.member_role, this.batch) + '</td><td>' + new Date(this.issue_time).toLocaleDateString("en-IN") + '</td><td>' + entryStatus(this.is_returned) + '</td><td>' + returnDate(this.is_returned, this.return_time) + '</td></tr>';
                         serial++
                     });
                     all_page_num++;
@@ -415,9 +425,8 @@
             $.get("/entry/get?id=pending-entries&page=" + pending_page_num, function(data) {
                 var tbody = '';
                 if (data.success == true) {
-                    var serial = 1;
                     $.each(data.entries, function() {
-                        tbody += '<tr><td>' + serial + '</td><td>' + this.issue_id + '</td><td>' + this.book_ref_num + '</td><td>' + this.book_title + '</td><td>' + this.book_author + '</td><td><span class="badge bg-secondary" onclick="showPendingEntries(' + this.member_id + ')">' + this.member_id + '</span></td><td>' + this.member_name + '</td><td>' + this.member_email + '</td><td>' + this.member_mobile + '</td><td> ' + this.member_role + ' </td><td>' + new Date(this.issue_time).toLocaleDateString("en-IN") + '</td><td>' + entryStatus(this.is_returned) + '</td><td>' + retrunDate(this.is_returned, this.return_time) + '</td></tr>';
+                        tbody += '<tr><td>' + serial + '</td><td><a href="/entry/' + this.issue_id + '" target="_blank" >' + this.issue_id + '</a></td><td>' + this.book_ref_num + '</td><td>' + this.book_title + '</td><td>' + this.book_author + '</td><td><span class="badge bg-secondary" onclick="showPendingEntries(\'' + this.member_id + '\')" >' + this.member_id + '</span></td><td>' + this.member_name + '</td><td>' + this.member_email + '</td><td>' + this.member_mobile + '</td><td>' + this.member_role + '</td><td>' + validBatch(this.member_role, this.batch) + '</td><td>' + new Date(this.issue_time).toLocaleDateString("en-IN") + '</td><td>' + entryStatus(this.is_returned) + '</td><td>' + returnDate(this.is_returned, this.return_time) + '</td></tr>';
                         serial++
                     });
                     pending_page_num++;
@@ -431,9 +440,8 @@
             $.get("/entry/get?id=returned-entries&page=" + returned_page_num, function(data) {
                 var tbody = '';
                 if (data.success == true) {
-                    var serial = 1;
                     $.each(data.entries, function() {
-                        tbody += '<tr><td>' + serial + '</td><td>' + this.issue_id + '</td><td>' + this.book_ref_num + '</td><td>' + this.book_title + '</td><td>' + this.book_author + '</td><td><span class="badge bg-secondary" onclick="showPendingEntries(' + this.member_id + ')" >' + this.member_id + '</span></td><td>' + this.member_name + '</td><td>' + this.member_email + '</td><td>' + this.member_mobile + '</td><td>' + this.member_role + '</td><td>' + new Date(this.issue_time).toLocaleDateString("en-IN") + '</td><td>' + entryStatus(this.is_returned) + '</td><td>' + retrunDate(this.is_returned, this.return_time) + '</td></tr>';
+                        tbody += '<tr><td>' + serial + '</td><td><a href="/entry/' + this.issue_id + '" target="_blank" >' + this.issue_id + '</a></td><td>' + this.book_ref_num + '</td><td>' + this.book_title + '</td><td>' + this.book_author + '</td><td><span class="badge bg-secondary" onclick="showPendingEntries(\'' + this.member_id + '\')" >' + this.member_id + '</span></td><td>' + this.member_name + '</td><td>' + this.member_email + '</td><td>' + this.member_mobile + '</td><td>' + this.member_role + '</td><td>' + validBatch(this.member_role, this.batch) + '</td><td>' + new Date(this.issue_time).toLocaleDateString("en-IN") + '</td><td>' + entryStatus(this.is_returned) + '</td><td>' + returnDate(this.is_returned, this.return_time) + '</td></tr>';
                         serial++
                     });
                     returned_page_num++;
@@ -465,14 +473,17 @@
                 }
             });
             if (current_active === "all-entries") {
+                serial = 1;
                 loadAllEntries();
                 pending_page_num = 1;
                 returned_page_num = 1
             } else if (current_active === "pending-entries") {
+                serial = 1;
                 loadPendingEntries();
                 all_page_num = 1;
                 returned_page_num = 1
             } else {
+                serial = 1;
                 loadReturnedEntries();
                 all_page_num = 1;
                 pending_page_num = 1;
@@ -506,9 +517,9 @@
                 let body = '';
                 $("#pending-title").html('RegNo: ' + member_id);
                 if (data.success === true) {
-                    body += '<div class="table-responsive" ><h3>Pending Books:</h3><table class="table table-bordered"><thead><tr><th>Ref Num</th><th>Title</th></tr></thead><tbody>';
+                    body += '<div class="table-responsive" ><h3>Pending Books: ' + data.entries.length + '</h3><table class="table table-bordered"><thead><tr><th>Ref Num</th><th>Title</th><th>Author</th></tr></thead><tbody>';
                     $.each(data.entries, function() {
-                        body += '<tr><td>' + this.book_ref_num + '</td><td>' + this.book_title + '</td></tr>';
+                        body += '<tr><td>' + this.book_ref_num + '</td><td>' + this.book_title + '</td><td>' + this.book_author + '</td></tr>';
                     });
                     body += '<tbody></table></div>';
                     $("#pending-list").html(body);

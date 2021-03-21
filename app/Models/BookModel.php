@@ -79,6 +79,13 @@ class BookModel extends Model{
         return $this->countAll();
     }
 
+    public function fetchIssuedBooksCount()
+    {
+        $query =  $this->query("SELECT COUNT(ref_num) AS count FROM cse_library_books WHERE status = 'issued' ");
+        return $query->getRow()->count;
+
+    }
+
     public function fetchAllTitlesCount(){
         $query = $this->query("SELECT COUNT(DISTINCT(title)) AS count FROM cse_library_books ");
         return $query->getRow()->count;

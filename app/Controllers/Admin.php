@@ -8,6 +8,8 @@ use App\Models\AdminModel;
 
 use App\Models\BookModel;
 
+use App\Models\EntryModel;
+
 use App\RedisCache\CacheToken;
 
 use App\Mailer\SendMail;
@@ -91,12 +93,20 @@ class Admin extends BaseController
         if ($this->admin_auth->isAuthenticated()) {
             $book_model = new BookModel();
             $data = [
-                'books_total_count'=>$book_model->fetchAllBooksCount(),
-                'books_titles_count'=>$book_model->fetchAllTitlesCount()
+                'books_total_count'=>$book_model->fetchAllBooksCount() ?? '0',
+                'books_titles_count'=>$book_model->fetchAllTitlesCount() ?? '0',
+                'books_issued_count'=>$book_model->fetchIssuedBooksCount() ?? '0'
             ];
 
             if(strcmp($this->request->getGet('data'),'titles') === 0){
                 return $this->response->setStatusCode(200)->setJSON(json_encode(['titles'=>$book_model->fetchTopTenTitles()]));
+            }
+
+            if(strcmp($this->request->getGet('data'),'issued') === 0){
+                
+                $entry_model = new EntryModel();
+
+                return $this->response->setStatusCode(200)->setJSON(json_encode(['titles' => $entry_model->fetchTopTenIssuedTitles()]));
             }
 
             return view("admin/dashboard",$data);
@@ -265,10 +275,6 @@ class Admin extends BaseController
 
                         }
 
-                    //generate and add captcha
-                    $captcha = new Captcha();
-
-                    $data['captcha'] = $captcha->generateCaptcha();
 
                     return view('/admin/reset_password',$data);
                 }else{
@@ -451,10 +457,6 @@ class Admin extends BaseController
 
     }
 
-    public function demo(){
-        $book_model = new BookModel();
-         return $this->response->setStatusCode(200)->setJSON(json_encode($book_model->fetchTopTenTitles()));
-    }
 
     public function logout(){
         session()->destroy();

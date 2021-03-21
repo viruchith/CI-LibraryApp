@@ -14,17 +14,24 @@ class EntryModel extends Model{
 
     protected $returnType = 'array';
 
-    protected $allowedFields = ['issue_id','book_ref_num','member_id','member_name','member_email','member_mobile','member_role','issue_time','is_returned','return_time'];
+    protected $allowedFields = ['issue_id','book_ref_num','member_id','member_name','member_email','member_mobile','member_role','batch','issue_time','is_returned','return_time'];
 
     public function addEntry($data){
-       
+            $is_student = false;
+            if(strcmp($data['member_role'], 'Student') === 0){
+                $is_student =true;
+            }
             foreach ($data as $key => $value) {
                 $data[$key] = $this->escape($data[$key]);
             }
 
             $this->transBegin();
             $this->query("UPDATE cse_library_books SET status = 'issued', last_issue_id = ".$data['issue_id']." WHERE ref_num = ".$data['book_ref_num']." AND status = 'available' ");
-            $this->query("INSERT INTO cse_library_entries(issue_id, book_ref_num, book_title, book_author, member_id, member_name, member_email, member_mobile, member_role, issue_time,is_returned) VALUES (".$data['issue_id'].",".$data['book_ref_num'].",".$data['book_title'].",".$data['book_author'].",".$data['member_id'].", ".$data['member_name'].", ".$data['member_email'].", ".$data['member_mobile'].", ".$data['member_role'].",".$data['issue_time'].", 0) ");
+            if($is_student){
+                $this->query("INSERT INTO cse_library_entries(issue_id, book_ref_num, book_title, book_author, member_id, member_name, member_email, member_mobile, member_role, batch, issue_time, is_returned) VALUES (" . $data['issue_id'] . "," . $data['book_ref_num'] . "," . $data['book_title'] . "," . $data['book_author'] . "," . $data['member_id'] . ", " . $data['member_name'] . ", " . $data['member_email'] . ", " . $data['member_mobile'] . ", " . $data['member_role'] . ", ".$data['batch'] .", ". $data['issue_time'] . ", 0) ");
+            }else{
+               $this->query("INSERT INTO cse_library_entries(issue_id, book_ref_num, book_title, book_author, member_id, member_name, member_email, member_mobile, member_role, issue_time,is_returned) VALUES (" . $data['issue_id'] . "," . $data['book_ref_num'] . "," . $data['book_title'] . "," . $data['book_author'] . "," . $data['member_id'] . ", " . $data['member_name'] . ", " . $data['member_email'] . ", " . $data['member_mobile'] . ", " . $data['member_role'] . "," . $data['issue_time'] . ", 0) ");
+            }
 
             if ($this->transStatus() === FALSE) {
                 $this->transRollback();
@@ -97,12 +104,26 @@ class EntryModel extends Model{
         $from = $this->escape($from);
         $to = $this->escape($to);
 
-        $entry_q = $this->query("SELECT * FROM cse_library_entries WHERE issue_time BETWEEN ".$from." AND ".$to." ORDER BY issue_time DESC LIMIT 400");
-        return $entry_q->getResultArray();
+        $query = $this->query("SELECT * FROM cse_library_entries WHERE issue_time BETWEEN ".$from." AND ".$to." ORDER BY issue_time DESC LIMIT 400");
+        return $query->getResultArray();
 
     }
 
-    public function fetchPendingEntriesByMemberId($member_id){
+    public function fetchPendingEntriesByMemberId(String $member_id){
         return $this->where(['member_id'=>$member_id,'is_returned'=>false])->findAll();
+    }
+
+    public function fetchTopTenIssuedTitles(){
+        $query = $this->query("SELECT book_title,COUNT(book_title) AS quantity FROM cse_library_entries WHERE 1 GROUP BY book_title ORDER BY quantity DESC LIMIT 10");
+        return $query->getResultArray();
+
+    }
+
+    public function fetchEntriesByBatch(String $batch){
+        return $this->where(['member_role'=>'Student','batch'=>$batch])->orderBy('issue_time', 'DESC')->findAll(400);
+    }
+
+    public function searchEntries(String $m,String $q){
+        return $this->orderBy('issue_time','DESC')->orLike([$m=>$q])->findAll(400);
     }
 }

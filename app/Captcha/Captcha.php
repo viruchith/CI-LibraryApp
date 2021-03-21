@@ -19,7 +19,7 @@ class Captcha{
         // store it in session
         session()->set("captcha", $this->builder->getPhrase());
         //return inline data @string
-        return $this->builder->inline();
+        return $this->builder->inline(100);//quality = 100
     }
 
     function verifyCaptcha($user_phrase){

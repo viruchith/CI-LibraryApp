@@ -267,16 +267,6 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h2 class="h2">Verify Issue</h2>
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="btn-group me-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-                        </div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                            <span data-feather="calendar"></span>
-                            This week
-                        </button>
-                    </div>
                 </div>
 
                 <div class="container">
@@ -302,6 +292,13 @@
                                         <h5>Member Email : <?= $member_email ?></h5>
                                         <h5>Member Mobile : <?= $member_mobile ?></h5>
                                         <h5>Member Role : <?= $member_role ?></h5>
+                                        <?php
+                                        if (strcmp($member_role,'Student') === 0) {
+                                        ?>
+                                        <h5>Batch : <?= $batch ?></h5>
+                                        <?php 
+                                        }
+                                        ?>
                                     </div>
                                 </div>
                                 <br>
@@ -320,7 +317,7 @@
                                     <br>
                                     <div class="form-group">
                                         <label for="">Pin :</label>
-                                        <input class="form-control" type="text" name="pin" id="pin" placeholder="Admin's Pin" pattern="[0-9]{4}" data-toggle="tooltip" data-bs-tooltip="" minlength="2" maxlength="50" title="OTP">
+                                        <input class="form-control" type="password" name="pin" id="pin" placeholder="Admin's Pin" pattern="[0-9]{4}" data-toggle="tooltip" data-bs-tooltip="" minlength="4" title="OTP">
                                     </div>
                                     <br>
                                     <div class="form-group">

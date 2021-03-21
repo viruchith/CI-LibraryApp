@@ -148,13 +148,13 @@
 <body>
 
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Company name</a>
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">CSE Library</a>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <ul class="navbar-nav px-3">
             <li class="nav-item text-nowrap">
-                <a class="nav-link" href="#">Sign out</a>
+                <a class="nav-link" href="/admin/logout">Sign out</a>
             </li>
         </ul>
     </header>
@@ -255,8 +255,18 @@
                                 Report
                             </a>
                         </li>
-
-
+                        <li class="nav-item">
+                            <a class="nav-link" href="/entry/batch">
+                                <span data-feather="users"></span>
+                                Batch Report
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/entry/search">
+                                <span data-feather="search"></span>
+                                Search
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -290,6 +300,8 @@
                                     <th scope="col">Author</th>
                                     <th scope="col">Publisher</th>
                                     <th scope="col">Status</th>
+                                    <th scope="col">Edit</th>
+                                    <th scope="col">Delete</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody">
@@ -465,7 +477,7 @@
 
                     {
                         $.each(data, function() {
-                            var row = '<tr id="' + this.ref_num + '" ><td>' + serial + '</td><td>' + issueLink(this.ref_num,this.status) + '&nbsp;<button data-ref-num="' + this.ref_num + '" class="btn btn-info" onclick="edit(this)" ><i data-feather="edit"></i></button>' + '&nbsp;<button data-ref-num="' + this.ref_num + '" class="btn btn-danger" onclick="deleteBook(this)" ><i data-feather="delete"></i></button>' + '</td><td>' + this.title + '</td><td>' + this.author + '</td><td>' + this.publisher + '</td><td>' + bookStatus(this.status) + '</td></tr>';
+                            var row = '<tr id="' + this.ref_num + '" ><td>' + serial + '</td><td>' + issueLink(this.ref_num,this.status)+'</td><td>' + this.title + '</td><td>' + this.author + '</td><td>' + this.publisher + '</td><td>' + bookStatus(this.status) + '</td><td>'+'<button data-ref-num="' + this.ref_num + '" class="btn btn-info" onclick="edit(this)" ><i data-feather="edit"></i></button>'+'</td><td>'+'&nbsp;<button data-ref-num="' + this.ref_num + '" class="btn btn-danger" onclick="deleteBook(this)" ><i data-feather="delete"></i></button>'+'</td></tr>';
                             $("#tbody").append(row);
                             serial++;
                         });
@@ -491,7 +503,7 @@
                 success: function(data) {
                     if (data.success == true) {
                         $('#edit-alert-box').html('<br><div class="alert alert-success" role="alert">Updated successfully !</div><br>');
-                        $('#' + data.book.ref_num).html('<td>' + ($('#' + data.book.ref_num).index() + 1) + '</td><td>' + data.book.ref_num + '&nbsp;<button data-ref-num="' + data.book.ref_num + '" class="btn btn-info" onclick="edit(this)" ><i class="fas fa-edit"></i></button>' + '&nbsp;<button data-ref-num="' + data.book.ref_num + '" class="btn btn-danger" onclick="deleteBook(this)" ><i class="fas fa-trash-alt"></i></button>' + '</td><td>' + data.book.title + '</td><td>' + data.book.author + '</td><td>' + data.book.publisher + '</td><td>' + data.book.status + '</td>');
+                        $('#' + data.book.ref_num).html('<td>' + ($('#' + data.book.ref_num).index() + 1) + '</td><td>'+ issueLink(data.book.ref_num,data.book.status)+'</td><td>' + data.book.title + '</td><td>' + data.book.author + '</td><td>' + data.book.publisher + '</td><td>' + bookStatus(data.book.status) + '</td><td>'+'<button data-ref-num="' + data.book.ref_num + '" class="btn btn-info" onclick="edit(this)" ><i data-feather="edit"></i></button>'+'</td><td>'+'&nbsp;<button data-ref-num="' + data.book.ref_num + '" class="btn btn-danger" onclick="deleteBook(this)" ><i data-feather="delete"></i></button>'+'</td>');
                         // load icons
                         feather.replace();
                     } else {
@@ -550,7 +562,7 @@
                 }
 
                 // Download CSV file
-                downloadCSV(csv.join("\n"), "report.csv");
+                downloadCSV(csv.join("\n"), "books.csv");
             } else {
                 alert("No data to export !");
             }
@@ -608,33 +620,9 @@
                         alert("There was an error.");
                     }
                 });
-            } else {
-                console.log("deleted !");
             }
         }
 
-
-        //edit form
-        $("#edit-book").submit(function(e) {
-            e.preventDefault(); // prevent actual form submit
-            var form = $(this);
-            var url = form.attr('action'); //get submit url [replace url here if desired]
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: form.serialize(), // serializes form input
-                success: function(data) {
-                    if (data.success == true) {
-                        $('#edit-alert-box').html('<br><div class="alert alert-success" role="alert">Updated successfully !</div><br>');
-                        $('#' + data.book.ref_num).html('<td>' + ($('#' + data.book.ref_num).index() + 1) + '</td><td>' + data.book.ref_num + '&nbsp;<button data-ref-num="' + data.book.ref_num + '" class="btn btn-info" onclick="edit(this)" ><i class="fas fa-edit"></i></button>' + '&nbsp;<button data-ref-num="' + data.book.ref_num + '" class="btn btn-danger" onclick="deleteBook(this)" ><i class="fas fa-trash-alt"></i></button>' + '</td><td>' + data.book.title + '</td><td>' + data.book.author + '</td><td>' + data.book.publisher + '</td><td>' + data.book.status + '</td>');
-                        // load icons
-                        feather.replace();
-                    } else {
-                        $('#edit-alert-box').html('<br><div class="alert alert-danger" role="alert">Invalid Request !</div><br>');
-                    }
-                }
-            });
-        });
 
         // modal
         var editModal = new bootstrap.Modal(document.getElementById('edit-modal'), {

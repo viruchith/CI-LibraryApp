@@ -309,6 +309,17 @@
                                     <input type="text" class="form-control" value="<?= $member_role ?>" name="" id="" disabled>
                                 </div>
                                 <br>
+                                <?php
+                                if (strcmp($member_role, 'Student') === 0) {
+                                ?>
+                                    <div class="form-group">
+                                        <label for="">Batch :</label>
+                                        <input type="text" class="form-control" value="<?= $batch ?>" name="" id="" disabled>
+                                    </div>
+                                    <br>
+                                <?php
+                                }
+                                ?>
                                 <div class="form-group">
                                     <label for="">Member Name :</label>
                                     <input type="text" class="form-control" value="<?= $member_name ?>" id="member_name" name="member_name" aria-describedby="helpId" placeholder="Member Name" maxlength="200" disabled>

@@ -176,12 +176,6 @@
             <div class="form-group">
                 <input id="retypepassword" class="border-primary shadow form-control rubberBand animated" type="password" data-toggle="tooltip" data-bs-tooltip="" name="retypepassword" placeholder="Retype Password" required title="Retype New Password">
             </div>
-            <div class="form-group">
-                <img src="<?= $captcha ?>" alt="" srcset="">
-            </div>
-            <div class="form-group">
-                <input class="border-primary shadow form-control rubberBand animated" type="text" name="captcha" id="captcha" placeholder="Captcha code" data-toggle="tooltip" data-bs-tooltip="" data-placement="bottom" minlength="2" maxlength="50" title="Captcha code" required>
-            </div>
             <div class="form-group"><button class="btn btn-primary btn-block border rounded-pill shadow wobble animated" type="submit" style="color: var(--light);background: var(--blue);">Reset Password</button></div>
             <?php if (isset($validation)) : ?>
                 <div class="col-12">

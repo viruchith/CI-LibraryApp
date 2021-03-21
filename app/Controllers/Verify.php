@@ -121,23 +121,4 @@ class Verify extends BaseController
         
     }
 
-    public function demo(){
-    $entry_model = new EntryModel();
-        
-    /*$data = [
-            "issue_id"=>"IS12345678",
-            "book_ref_num"=>"viru1234",
-            "book_title"=>"Book title",
-            "book_author"=>"Author name",
-            "member_id"=>"1919102189",
-            "member_name"=>"Viruchith",
-            "member_email"=>"vg@gmail.com",
-            "member_mobile"=>"8098867773",
-            "member_role"=>"student",
-            "issue_time"=> date('Y-m-d H:i:s', time())
-            ];*/
-    //echo $entry_model->addEntry($data);
-
-
-    }
 }

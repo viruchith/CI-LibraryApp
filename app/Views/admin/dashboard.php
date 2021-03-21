@@ -257,8 +257,18 @@
                                 Report
                             </a>
                         </li>
-
-                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="/entry/batch">
+                                <span data-feather="users"></span>
+                                Batch Report
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/entry/search">
+                                <span data-feather="search"></span>
+                                Search
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -271,25 +281,39 @@
                 </div>
                 <br>
                 <div class="row">
-                    <div class="col-lg-4">
-                        <div class="card">
-                            <div class="card-body">
+                    <div class="col-lg-4 mb-3 d-flex align-items-stretch">
+                        <div class="card border-dark">
+                            <div class="card-body d-flex flex-column">
                                 <div class="display-4" id="books-total-count" data-count="<?= $books_total_count ?>">
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="card">
-                            <div class="card-body">
+                    <div class="col-lg-4 mb-3 d-flex align-items-stretch">
+                        <div class="card border-info">
+                            <div class="card-body d-flex flex-column">
                                 <div class="display-4" id="books-titles-count" data-count="<?= $books_titles_count ?>">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-3 d-flex align-items-stretch">
+                        <div class="card border-danger">
+                            <div class="card-body">
+                                <div class="display-4" id="books-issued-count" data-count="<?= $books_issued_count ?>">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <br>
                     <div class="container-fluid overflow-auto">
-                        <canvas id="titles-chart" width="150" height="150"></canvas>
+                        <h2>Top Ten Issued</h2>
+                        <canvas class="my-4 w-100" id="issued-chart"></canvas>
+                    </div>
+                    <hr>
+                    <div class="container-fluid overflow-auto">
+                        <h2>Top Ten Titles</h2>
+                        <canvas class="my-4 w-100" id="titles-chart"></canvas>
                     </div>
             </main>
         </div>
@@ -320,19 +344,20 @@
             feather.replace();
             Counter( {duration: 5,suffix: '<br>Books'},'books-total-count');
             Counter( {duration: 5,suffix: '<br>Titles'},'books-titles-count');
+            Counter( {duration: 5,suffix: '<br>Issued'},'books-issued-count');
 
         });
     </script>
     <script>
-        function plot(titles, count) {
-            var ctx = document.getElementById('titles-chart').getContext('2d');
+        function plot(x, y, id, label) {
+            var ctx = document.getElementById(id).getContext('2d');
             var myChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: titles,
+                    labels: x,
                     datasets: [{
-                        label: '# books',
-                        data: count,
+                        label: label,
+                        data: y,
                         backgroundColor: [
                             'rgba(255, 99, 132, 0.2)',
                             'rgba(54, 162, 235, 0.2)',
@@ -371,7 +396,17 @@
                 titlesArr.push(this.title);
                 countArr.push(this.quantity);
             });
-            plot(titlesArr, countArr);
+            plot(titlesArr, countArr, 'titles-chart', '# books');
+        });
+
+        $.get("/admin/dashboard?data=issued", function(data) {
+            let countArr = [];
+            let titlesArr = [];
+            $.each(data.titles, function() {
+                titlesArr.push(this.book_title);
+                countArr.push(this.quantity);
+            });
+            plot(titlesArr, countArr, 'issued-chart', '# times');
         });
     </script>
 </body>

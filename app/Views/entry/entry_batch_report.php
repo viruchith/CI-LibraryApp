@@ -5,10 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title>Add Admin</title>
+    <title>Batch Report</title>
     <!--Google fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet">
+
     <!-- Bootstrap core CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 
@@ -39,6 +40,11 @@
 
         table {
             font-size: medium;
+        }
+
+
+        .error {
+            color: red;
         }
 
         .feather {
@@ -172,13 +178,13 @@
                     </h6>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="/admin/dashboard">
+                            <a class="nav-link" href="/admin/dashboard">
                                 <span data-feather="home"></span>
                                 Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="/admin/add">
+                            <a class="nav-link" href="/admin/add">
                                 <span data-feather="user-plus"></span>
                                 Add
                             </a>
@@ -257,7 +263,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/entry/batch">
+                            <a class="nav-link active" href="/entry/batch">
                                 <span data-feather="users"></span>
                                 Batch Report
                             </a>
@@ -274,70 +280,85 @@
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Add User</h1>
+                    <h2 class="h2">
+                        Batch Report:
                 </div>
 
                 <div class="container">
                     <div class="container">
-                        <form id="add-admin" action="/admin/add" method="post">
-                            <div id="alert">
-
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" name="name" class="form-control" id="name" placeholder="Name" aria-describedby="">
-                                <label for="name" class="form-label">Name</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="email" name="email" class="form-control" id="email" placeholder="Email" aria-describedby="">
-                                <label for="email" class="form-label">Email</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" name="mobile" id="mobile" pattern="[0-9]{10}" placeholder="Mobile Number" aria-describedby="">
-                                <label for="mobile" class="form-label">Mobile Number</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" name="pin" id="pin" pattern="[0-9]{4}" placeholder="Mobile Number" aria-describedby="">
-                                <label for="pin" class="form-label">Pin</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="password" name="password" id="password" class="form-control" placeholder="New Password" id="exampleInputPassword1">
-                                <label for="password" class="form-label">New Password</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="password" name="retypepassword" id="retypepassword" class="form-control" placeholder="Retype Password" id="exampleInputPassword1">
-                                <label for="retypepassword" class="form-label">Retype Password</label>
-                            </div>
-                            <button type="submit" class="btn btn-primary">
-                                <div id="loading" class="spinner-border text-danger" role="status">
-                                    <span class="visually-hidden">Loading...</span>&nbsp;
-                                </div>
-                                add&nbsp;<i data-feather="user-plus"></i>
-                            </button>
+                        <form id="batch-report" action="/entry/report" method="post">
+                            <div class="form-group">
+                                <select class="form-select" name="batch" aria-label="Member Role" id="batch-select" required></select></div>
+                            <br>
+                            <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
+                        <div id="result-box" style="text-align: center;">
+
+                        </div>
                     </div>
                 </div>
                 <br>
-                <h2>All Users</h2>
-                <div class="table-responsive">
-                    <table class="table table-striped table-sm">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Mobile</th>
-                                <th>Delete</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody">
+                <hr>
+                <div class="container">
+                    <div class="d-flex">
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <div class="btn-group me-2">
+                                <button id="export-csv" type="button" class="btn btn-sm btn-warning">Export to CSV</button>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="table-responsive">
+                        <table id="entry-table" class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Issue Id</th>
+                                    <th>Ref num</th>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Member Id</th>
+                                    <th>Member Name</th>
+                                    <th>Member Email</th>
+                                    <th>Member Mobile</th>
+                                    <th>Member Role</th>
+                                    <th>Batch</th>
+                                    <th>Issue Time</th>
+                                    <th>Status</th>
+                                    <th>Return Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody">
 
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </main>
         </div>
     </div>
 
+    <!--Modal Start -->
+    <div class="modal" tabindex="-1" id="pending-modal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="pending-title" class="modal-title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="edit-alert-box">
+
+                    </div>
+                    <div id="pending-list">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal End -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
@@ -345,87 +366,172 @@
     <script>
         $(document).ready(function() {
             $("#loading").hide();
-            getAllUsers();
             feather.replace() //feather icons
+            loadBatches();
         });
 
-        function getAllUsers() {
-            $.get("/admin/users/all", function(data) {
-                var tbody = '';
-                if (data.success == true) {
-                    var serial = 1;
-                    $.each(data.users, function() {
-                        if (this.is_superadmin == false) {
-                            tbody += '<tr><td>' + serial + '</td><td>' + this.name + '</td><td>' + this.email + '</td><td>' + this.mobile + '</td><td><button class="btn btn-danger" data-email="' + this.email + '" data-id="' + this.id + '" onclick="deleteAdmin(this)" ><i data-feather="user-x"></i></button></td></tr>';
-                            serial++
-                        }
-                    });
-                    $("#tbody").html(tbody);
-                    feather.replace() //feather icons
-                }
-            });
+        function entryStatus(code) {
+            if (code === '1')
+                return "<span class='badge bg-success'>Returned <i data-feather='check-circle'></i></span>";
+            else
+                return "<span class='badge bg-danger'>Pending  <i data-feather='x-circle'></i></span>";
         }
 
-        function deleteAdmin(elem) {
-            var email = $(elem).attr("data-email");
-            if (confirm("Are you sure you want to delete, " + email + " ")) {
-                $.post("/admin/delete", {
-                        'email': email,
-                    })
-                    .done(function(data) {
-                        if (data.success === true) {
-                            var msg = '<br><div class="alert alert-success" role="alert">' + data.msg + '</div><br>';
-                            $("#alert").html(msg);
-                        } else {
-                            var msg = '<br><div class="alert alert-danger" role="alert"><ul>';
-                            $.each(data.errors, function(key, value) {
-                                msg += '<li>' + value + '</li>';
-                            });
-                            msg += '</ul></div><br>';
-                        }
+        function returnDate(code, date) {
+            if (code === '1')
+                return new Date(date).toLocaleDateString("en-IN");
+            else
+                return "NIL";
 
-                        window.scrollTo({
-                            top: 0,
-                            behavior: 'smooth'
-                        });
+        }
 
-                        getAllUsers();
-
-                    });
+        function validBatch(role, batch) {
+            if (role === "Student") {
+                return batch;
+            } else {
+                return "NIL";
             }
         }
 
-        // search form
-        $("#add-admin").submit(function(e) {
-            e.preventDefault(); // prevent actual form submit
-            var form = $(this);
-            var url = form.attr('action'); //get submit url [replace url here if desired]
-            $("#loading").show();
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: form.serialize(), // serializes form input
-                success: function(data) {
-                    if (data.success == true) {
-                        var msg = '<br><div class="alert alert-success" role="alert">' + data.msg + '</div><br>';
-                        $("#alert").html(msg);
-                        getAllUsers();
-                    } else {
-                        var msg = '<br><div class="alert alert-danger" role="alert"><ul>';
-                        $.each(data.errors, function(key, value) {
-                            msg += '<li>' + value + '</li>';
-                        });
-                        msg += '</ul></div><br>';
-                    }
-                    $("#alert").html(msg);
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
+        function showPendingEntries(member_id) {
+            $.get("/entry/pending/" + member_id, function(data) {
+                let body = '';
+                $("#pending-title").html('RegNo: ' + member_id);
+                if (data.success === true) {
+                    body += '<div class="table-responsive" ><h3>Pending Books: ' + data.entries.length + '</h3><table class="table table-bordered"><thead><tr><th>Ref Num</th><th>Title</th><th>Author</th></tr></thead><tbody>';
+                    $.each(data.entries, function() {
+                        body += '<tr><td>' + this.book_ref_num + '</td><td>' + this.book_title + '</td><td>' + this.book_author + '</td></tr>';
                     });
-                    $("#loading").hide();
+                    body += '<tbody></table></div>';
+                    $("#pending-list").html(body);
+                } else {
+                    $("#pending-list").html(data.msg);
                 }
             });
+            pendingModal.show();
+        }
+
+        // modal
+        var pendingModal = new bootstrap.Modal(document.getElementById('pending-modal'), {
+            keyboard: false
         });
+
+        $("#batch-report").submit(function(e) {
+            e.preventDefault(); // prevent actual form submit
+            let batch = $("#batch-select option:selected").val();
+            loadBatchEntries(batch);
+
+        });
+
+        function timeInterval(fromDate, toDate) {
+            var now = new Date(toDate);
+            var then = new Date(fromDate);
+            var dayCount = 0;
+
+            while (now.setHours(1, 3, 3, 7) > then.setHours(1, 3, 3, 7)) {
+                then.setDate(then.getDate() + 1);
+                dayCount++;
+            }
+            while (now.setHours(1, 3, 3, 7) < then.setHours(1, 3, 3, 7)) {
+                now.setDate(now.getDate() + 1);
+                dayCount++;
+            }
+
+            var years = Math.floor(dayCount / 365);
+            dayCount = dayCount - years * 365;
+            var months = Math.floor(dayCount / 30);
+            dayCount = dayCount - months * 30;
+            var days = dayCount;
+
+            return {
+                years,
+                months,
+                days
+            };
+        }
+
+
+        function downloadCSV(csv, filename) {
+            var csvFile;
+            var downloadLink;
+
+            // CSV file
+            csvFile = new Blob([csv], {
+                type: "text/csv"
+            });
+
+            // Download link
+            downloadLink = document.createElement("a");
+
+            // File name
+            downloadLink.download = filename;
+
+            // Create a link to the file
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+
+            // Hide download link
+            downloadLink.style.display = "none";
+
+            // Add the link to DOM
+            document.body.appendChild(downloadLink);
+
+            // Click download link
+            downloadLink.click();
+        }
+
+        function exportTableToCSV() {
+            var csv = [];
+            var rows = document.querySelectorAll("#entry-table tr");
+
+            if (rows.length > 1) {
+                for (var i = 0; i < rows.length; i++) {
+                    var row = [],
+                        cols = rows[i].querySelectorAll("td, th");
+
+                    for (var j = 0; j < cols.length; j++)
+                        row.push('"' + cols[j].innerText + '"');
+                    csv.push(row.join(","));
+                }
+
+                // Download CSV file
+                downloadCSV(csv.join("\n"), "report.csv");
+            } else {
+                alert("No data to export !");
+            }
+        }
+
+        //export-csv Btn
+        $("#export-csv").click(function() {
+            exportTableToCSV();
+        });
+
+        function loadBatches() {
+            $.get("/batch", function(data) {
+                let options = '';
+                $.each(data, function(key, val) {
+                    options += '<option value="' + key + '" >' + key + '</option>';
+                });
+                $("#batch-select").html(options);
+            });
+        }
+
+        function loadBatchEntries(batch) {
+            $.get("/entry/batch?q=" + batch, function(data) {
+                var tbody = '';
+                if (data.success == true) {
+                    var serial = 1;
+                    $.each(data.entries, function() {
+                        tbody += '<tr><td>' + serial + '</td><td><a href="/entry/' + this.issue_id + '" target="_blank" >' + this.issue_id + '</a></td><td>' + this.book_ref_num + '</td><td>' + this.book_title + '</td><td>' + this.book_author + '</td><td><span class="badge bg-secondary" onclick="showPendingEntries(\'' + this.member_id + '\')" >' + this.member_id + '</span></td><td>' + this.member_name + '</td><td>' + this.member_email + '</td><td>' + this.member_mobile + '</td><td>' + this.member_role + '</td><td>' + validBatch(this.member_role, this.batch) + '</td><td>' + new Date(this.issue_time).toLocaleDateString("en-IN") + '</td><td>' + entryStatus(this.is_returned) + '</td><td>' + returnDate(this.is_returned, this.return_time) + '</td></tr>';
+                        serial++
+                    });
+                    $("#tbody").html(tbody);
+                    $("#result-box").html("<h4> " + data.entries.length + " Results</h4>");
+                    feather.replace() //feather icons
+                } else {
+                    $("#result-box").html('<h4 class="error"> No Results</h4>');
+                }
+            });
+        }
     </script>
 </body>
 
